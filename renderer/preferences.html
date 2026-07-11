@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PasteClean Preferences</title>
+  <link rel="stylesheet" href="dist.css">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+</head>
+<body class="bg-white text-slate-800 select-none">
+  <div class="max-w-lg mx-auto px-6 py-8">
+    <header class="flex items-center gap-3 mb-8">
+      <div class="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center text-white font-bold text-lg shadow-sm">P</div>
+      <div>
+        <h1 class="text-xl font-semibold text-slate-900">PasteClean</h1>
+        <p class="text-xs text-slate-500">Preferences</p>
+      </div>
+    </header>
+
+    <section class="mb-6">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4">Clipboard</h2>
+      <div class="space-y-3">
+        <label class="flex items-center justify-between cursor-pointer group">
+          <span class="text-sm text-slate-700 group-hover:text-slate-900">Auto-clean clipboard</span>
+          <input type="checkbox" id="autoClean" class="sr-only peer">
+          <span class="w-10 h-6 bg-slate-200 rounded-full peer-focus:ring-2 peer-focus:ring-emerald-300 peer-checked:bg-emerald-500 transition relative">
+            <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"></span>
+          </span>
+        </label>
+
+        <label class="flex items-center justify-between cursor-pointer group">
+          <span class="text-sm text-slate-700 group-hover:text-slate-900">Show notifications</span>
+          <input type="checkbox" id="showNotifications" class="sr-only peer">
+          <span class="w-10 h-6 bg-slate-200 rounded-full peer-focus:ring-2 peer-focus:ring-emerald-300 peer-checked:bg-emerald-500 transition relative">
+            <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"></span>
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <section class="mb-6">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4">Cleaning</h2>
+      <div class="space-y-3">
+        <label class="flex items-center justify-between cursor-pointer group">
+          <span class="text-sm text-slate-700 group-hover:text-slate-900">Trim whitespace</span>
+          <input type="checkbox" id="trimWhitespace" class="sr-only peer">
+          <span class="w-10 h-6 bg-slate-200 rounded-full peer-focus:ring-2 peer-focus:ring-emerald-300 peer-checked:bg-emerald-500 transition relative">
+            <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"></span>
+          </span>
+        </label>
+
+        <label class="flex items-center justify-between cursor-pointer group">
+          <span class="text-sm text-slate-700 group-hover:text-slate-900">Normalize line endings</span>
+          <input type="checkbox" id="normalizeLineEndings" class="sr-only peer">
+          <span class="w-10 h-6 bg-slate-200 rounded-full peer-focus:ring-2 peer-focus:ring-emerald-300 peer-checked:bg-emerald-500 transition relative">
+            <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"></span>
+          </span>
+        </label>
+
+        <label class="flex items-center justify-between cursor-pointer group">
+          <span class="text-sm text-slate-700 group-hover:text-slate-900">Collapse multiple spaces</span>
+          <input type="checkbox" id="collapseSpaces" class="sr-only peer">
+          <span class="w-10 h-6 bg-slate-200 rounded-full peer-focus:ring-2 peer-focus:ring-emerald-300 peer-checked:bg-emerald-500 transition relative">
+            <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"></span>
+          </span>
+        </label>
+
+        <label class="flex items-center justify-between cursor-pointer group">
+          <span class="text-sm text-slate-700 group-hover:text-slate-900">Remove empty lines</span>
+          <input type="checkbox" id="removeEmptyLines" class="sr-only peer">
+          <span class="w-10 h-6 bg-slate-200 rounded-full peer-focus:ring-2 peer-focus:ring-emerald-300 peer-checked:bg-emerald-500 transition relative">
+            <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"></span>
+          </span>
+        </label>
+
+        <label class="flex items-center justify-between cursor-pointer group">
+          <span class="text-sm text-slate-700 group-hover:text-slate-900">Strip HTML tags</span>
+          <input type="checkbox" id="removeHtml" class="sr-only peer">
+          <span class="w-10 h-6 bg-slate-200 rounded-full peer-focus:ring-2 peer-focus:ring-emerald-300 peer-checked:bg-emerald-500 transition relative">
+            <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"></span>
+          </span>
+        </label>
+
+        <label class="flex items-center justify-between cursor-pointer group">
+          <span class="text-sm text-slate-700 group-hover:text-slate-900">Remove non-ASCII characters</span>
+          <input type="checkbox" id="removeNonAscii" class="sr-only peer">
+          <span class="w-10 h-6 bg-slate-200 rounded-full peer-focus:ring-2 peer-focus:ring-emerald-300 peer-checked:bg-emerald-500 transition relative">
+            <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"></span>
+          </span>
+        </label>
+
+        <label class="flex items-center justify-between cursor-pointer group">
+          <span class="text-sm text-slate-700 group-hover:text-slate-900">Replace smart quotes</span>
+          <input type="checkbox" id="smartQuotes" class="sr-only peer">
+          <span class="w-10 h-6 bg-slate-200 rounded-full peer-focus:ring-2 peer-focus:ring-emerald-300 peer-checked:bg-emerald-500 transition relative">
+            <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"></span>
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4">System</h2>
+      <div class="space-y-4">
+        <label class="flex items-center justify-between cursor-pointer group">
+          <span class="text-sm text-slate-700 group-hover:text-slate-900">Open at login</span>
+          <input type="checkbox" id="autoStart" class="sr-only peer">
+          <span class="w-10 h-6 bg-slate-200 rounded-full peer-focus:ring-2 peer-focus:ring-emerald-300 peer-checked:bg-emerald-500 transition relative">
+            <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"></span>
+          </span>
+        </label>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="shortcut" class="block text-xs font-medium text-slate-500 mb-1">Shortcut</label>
+            <input type="text" id="shortcut" readonly class="w-full text-sm px-3 py-2 rounded-md border border-slate-300 bg-slate-50 text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-500 cursor-pointer" value="CommandOrControl+Shift+C">
+          </div>
+          <div class="flex items-end">
+            <button id="cleanNow" class="w-full px-3 py-2 text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 rounded-md transition shadow-sm">Clean Now</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="flex items-center justify-between text-xs text-slate-400 border-t border-slate-100 pt-4">
+      <span id="version">v1.0.0</span>
+      <button id="close" class="px-3 py-1.5 rounded-md border border-slate-200 hover:bg-slate-50 transition text-slate-600">Close</button>
+    </footer>
+  </div>
+
+  <div id="toast" class="fixed bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-slate-900 text-white text-sm rounded-md shadow-lg opacity-0 transition pointer-events-none" role="status" aria-live="polite"></div>
+
+  <script src="preferences.js"></script>
+</body>
+</html>

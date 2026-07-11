@@ -1,0 +1,96 @@
+{
+  "name": "pasteclean",
+  "version": "1.0.0",
+  "description": "Zero-backend, ultra-lightweight clipboard cleaner for macOS and Windows",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "tailwind:build": "tailwindcss -i ./renderer/styles.css -o ./renderer/dist.css --minify",
+    "tailwind:watch": "tailwindcss -i ./renderer/styles.css -o ./renderer/dist.css --watch",
+    "build:icons": "png2icons assets/icon.png assets/icon -allp -bc -i",
+    "build:assets": "convert assets/icon.png -resize 16x16 assets/tray-mac.png && convert assets/icon.png -resize 32x32 assets/tray-mac@2x.png && convert assets/icon.png -resize 16x16 assets/tray-win.png && convert assets/icon.png -resize 32x32 assets/tray-win@2x.png",
+    "build": "npm run build:icons && npm run tailwind:build && electron-builder",
+    "build:mac": "npm run build:icons && npm run tailwind:build && electron-builder --mac",
+    "build:win": "npm run build:icons && npm run tailwind:build && electron-builder --win",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "keywords": [
+    "clipboard",
+    "cleaner",
+    "paste",
+    "menubar",
+    "system-tray"
+  ],
+  "author": "SurgeGrid",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.0",
+    "tailwindcss": "^3.4.4",
+    "png2icons": "^2.0.1"
+  },
+  "dependencies": {},
+  "build": {
+    "appId": "io.surgegrid.pasteclean",
+    "productName": "PasteClean",
+    "copyright": "Copyright © 2026 SurgeGrid",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "assets/**/*"
+    ],
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "category": "public.app-category.utilities",
+      "icon": "assets/icon.icns"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "ia32"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": false,
+      "createStartMenuShortcut": true,
+      "shortcutName": "PasteClean"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    }
+  }
+}
