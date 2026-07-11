@@ -73,6 +73,14 @@
       e.preventDefault();
       e.stopPropagation();
 
+      if (e.key === 'Escape' || e.key === 'Backspace') {
+        window.api.setConfig({ shortcut: 'None' }).then((config) => {
+          renderConfig(config);
+          shortcutInput.blur();
+        });
+        return;
+      }
+
       const modifiers = [];
       if (e.ctrlKey) modifiers.push('Ctrl');
       if (e.metaKey) modifiers.push('Cmd');
@@ -85,7 +93,7 @@
       }
 
       const electronShortcut = [
-        e.ctrlKey ? 'CommandOrControl' : '',
+        e.ctrlKey || e.metaKey ? 'CommandOrControl' : '',
         e.shiftKey ? 'Shift' : '',
         e.altKey ? 'Alt' : '',
         key.length === 1 ? key.toUpperCase() : key,

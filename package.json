@@ -13,6 +13,7 @@
     "build": "npm run build:icons && npm run tailwind:build && electron-builder",
     "build:mac": "npm run build:icons && npm run tailwind:build && electron-builder --mac",
     "build:win": "npm run build:icons && npm run tailwind:build && electron-builder --win",
+    "build:win-store": "npm run build:icons && npm run tailwind:build && electron-builder --win appx",
     "postinstall": "electron-builder install-app-deps"
   },
   "keywords": [
@@ -24,73 +25,15 @@
   ],
   "author": "SurgeGrid",
   "license": "MIT",
+  "repository": "https://github.com/PasteKlean/pasteklean.git",
+  "homepage": "https://github.com/PasteKlean/pasteklean",
   "devDependencies": {
     "electron": "^31.0.0",
-    "electron-builder": "^24.13.0",
-    "tailwindcss": "^3.4.4",
-    "png2icons": "^2.0.1"
+    "electron-builder": "^24.13.3",
+    "png2icons": "^2.0.1",
+    "tailwindcss": "^3.4.4"
   },
-  "dependencies": {},
-  "build": {
-    "appId": "io.surgegrid.pasteclean",
-    "productName": "PasteClean",
-    "copyright": "Copyright © 2026 SurgeGrid",
-    "directories": {
-      "output": "dist"
-    },
-    "files": [
-      "main.js",
-      "preload.js",
-      "renderer/**/*",
-      "assets/**/*"
-    ],
-    "mac": {
-      "target": [
-        {
-          "target": "dmg",
-          "arch": ["x64", "arm64"]
-        },
-        {
-          "target": "zip",
-          "arch": ["x64", "arm64"]
-        }
-      ],
-      "category": "public.app-category.utilities",
-      "icon": "assets/icon.icns"
-    },
-    "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": ["x64", "ia32"]
-        },
-        {
-          "target": "portable",
-          "arch": ["x64"]
-        }
-      ],
-      "icon": "assets/icon.ico"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": false,
-      "createStartMenuShortcut": true,
-      "shortcutName": "PasteClean"
-    },
-    "dmg": {
-      "contents": [
-        {
-          "x": 130,
-          "y": 220
-        },
-        {
-          "x": 410,
-          "y": 220,
-          "type": "link",
-          "path": "/Applications"
-        }
-      ]
-    }
+  "dependencies": {
+    "electron-updater": "^6.8.8"
   }
 }
