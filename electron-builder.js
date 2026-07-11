@@ -46,7 +46,6 @@ const appxBuilder = appxConfig
         identityName: env.MSIX_IDENTITY_NAME,
         publisher: env.MSIX_PUBLISHER,
         displayName: env.MSIX_DISPLAY_NAME || 'PasteClean',
-        description: env.MSIX_DESCRIPTION || 'Zero-backend, ultra-lightweight clipboard cleaner for macOS and Windows',
         backgroundColor: env.MSIX_BACKGROUND_COLOR || 'transparent',
         languages: env.MSIX_LANGUAGES ? env.MSIX_LANGUAGES.split(',') : ['en-US'],
       },
@@ -57,6 +56,12 @@ module.exports = {
   appId: 'io.surgegrid.pasteclean',
   productName: 'PasteClean',
   copyright: 'Copyright © 2026 SurgeGrid',
+  electronUpdaterCompatibility: '>= 2.16',
+  publish: {
+    provider: 'github',
+    owner: 'PasteKlean',
+    repo: 'pasteklean',
+  },
   directories: {
     output: 'dist',
   },

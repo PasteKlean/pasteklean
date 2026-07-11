@@ -1,12 +1,19 @@
 'use strict';
 
-const { app, BrowserWindow, Tray, Menu, nativeImage, clipboard, globalShortcut, dialog, shell, ipcMain, Notification } = require('electron');
+const { app, BrowserWindow, Tray, Menu, nativeImage, clipboard, globalShortcut, shell, ipcMain, Notification } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 
 const isDev = process.argv.includes('--dev');
 const platform = process.platform;
+
+const singleInstanceLock = app.requestSingleInstanceLock();
+if (!singleInstanceLock) {
+  app.quit();
+  process.exit(0);
+}
 
 const userDataPath = app.getPath('userData');
 const configPath = path.join(userDataPath, 'config.json');
@@ -146,7 +153,7 @@ function showNotification(body) {
       title: 'PasteClean',
       body,
       silent: true,
-      icon: nativeImage.createEmpty(),
+      icon: getTrayIcon(),
     });
     notification.show();
   }
@@ -243,6 +250,17 @@ function buildTrayMenu() {
     {
       label: 'Preferences...',
       click: () => openPreferences(),
+    },
+    {
+      label: 'Check for Updates',
+      click: async () => {
+        try {
+          await autoUpdater.checkForUpdates();
+        } catch (err) {
+          if (isDev) console.error('Update check failed:', err);
+          showNotification('Update check failed');
+        }
+      },
     },
     {
       label: 'Open at Login',
@@ -356,6 +374,28 @@ function applyConfig() {
   }
 }
 
+function setupAutoUpdater() {
+  autoUpdater.on('error', (err) => {
+    if (isDev) console.error('Auto-updater error:', err);
+  });
+
+  autoUpdater.on('checking-for-update', () => {
+    if (isDev) console.log('Checking for update...');
+  });
+
+  autoUpdater.on('update-available', () => {
+    showNotification('A new version is available and will be downloaded.');
+  });
+
+  autoUpdater.on('update-not-available', () => {
+    if (isDev) console.log('No update available.');
+  });
+
+  autoUpdater.on('update-downloaded', () => {
+    showNotification('Update downloaded. It will be installed on quit.');
+  });
+}
+
 function setupIpc() {
   ipcMain.handle('get-config', () => config);
 
@@ -397,14 +437,23 @@ if (platform === 'win32') {
 }
 
 app.on('ready', () => {
+  if (platform === 'darwin') {
+    app.dock.hide();
+  }
+
   createTray();
   setupIpc();
+  setupAutoUpdater();
   applyConfig();
 
   lastText = clipboard.readText();
   lastHash = hashText(lastText);
 
   pollTimer = setInterval(pollClipboard, 250);
+
+  if (app.isPackaged) {
+    autoUpdater.checkForUpdatesAndNotify();
+  }
 
   if (isDev && process.argv.includes('--open-prefs')) {
     openPreferences();
@@ -413,6 +462,14 @@ app.on('ready', () => {
 
 app.on('window-all-closed', () => {
   // Keep menubar/tray alive.
+});
+
+app.on('activate', () => {
+  openPreferences();
+});
+
+app.on('second-instance', () => {
+  openPreferences();
 });
 
 app.on('will-quit', () => {

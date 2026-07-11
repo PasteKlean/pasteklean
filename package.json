@@ -25,11 +25,15 @@
   ],
   "author": "SurgeGrid",
   "license": "MIT",
+  "repository": "https://github.com/PasteKlean/pasteklean.git",
+  "homepage": "https://github.com/PasteKlean/pasteklean",
   "devDependencies": {
     "electron": "^31.0.0",
     "electron-builder": "^24.13.0",
-    "tailwindcss": "^3.4.4",
-    "png2icons": "^2.0.1"
+    "png2icons": "^2.0.1",
+    "tailwindcss": "^3.4.4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "electron-updater": "^6.8.8"
+  }
 }
