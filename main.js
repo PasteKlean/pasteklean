@@ -394,6 +394,8 @@ function setupAutoUpdater() {
   autoUpdater.on('update-downloaded', () => {
     showNotification('Update downloaded. It will be installed on quit.');
   });
+
+  autoUpdater.setFeedURL({ provider: 'github', owner: 'PasteKlean', repo: 'pasteklean' });
 }
 
 function setupIpc() {

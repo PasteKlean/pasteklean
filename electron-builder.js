@@ -59,11 +59,7 @@ module.exports = {
   productName: 'PasteClean',
   copyright: 'Copyright © 2026 SurgeGrid',
   electronUpdaterCompatibility: '>= 2.16',
-  publish: {
-    provider: 'github',
-    owner: 'PasteKlean',
-    repo: 'pasteklean',
-  },
+  publish: null,
   directories: {
     output: 'dist',
   },
