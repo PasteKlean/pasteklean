@@ -14,11 +14,11 @@
     "build:mac": "run-s build:icons tailwind:build build:electron:mac",
     "build:win": "run-s build:icons tailwind:build build:electron:win",
     "build:win-store": "run-s build:icons tailwind:build build:electron:appx",
-    "build:electron": "electron-builder",
-    "build:electron:mac": "electron-builder --mac",
-    "build:electron:win": "electron-builder --win",
-    "build:electron:appx": "electron-builder --win appx",
-    "postinstall": "electron-builder install-app-deps"
+    "build:electron": "node ./node_modules/electron-builder/cli.js",
+    "build:electron:mac": "node ./node_modules/electron-builder/cli.js --mac",
+    "build:electron:win": "node ./node_modules/electron-builder/cli.js --win",
+    "build:electron:appx": "node ./node_modules/electron-builder/cli.js --win appx",
+    "postinstall": "node ./node_modules/electron-builder/cli.js install-app-deps"
   },
   "keywords": [
     "clipboard",
