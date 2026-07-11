@@ -45,9 +45,11 @@ const appxBuilder = appxConfig
         applicationId: env.MSIX_APPLICATION_ID || 'App',
         identityName: env.MSIX_IDENTITY_NAME,
         publisher: env.MSIX_PUBLISHER,
+        publisherDisplayName: env.MSIX_PUBLISHER_DISPLAY_NAME || env.MSIX_DISPLAY_NAME || 'PasteKlean',
         displayName: env.MSIX_DISPLAY_NAME || 'PasteClean',
         backgroundColor: env.MSIX_BACKGROUND_COLOR || 'transparent',
         languages: env.MSIX_LANGUAGES ? env.MSIX_LANGUAGES.split(',') : ['en-US'],
+        artifactName: '${productName}-${version}.msix',
       },
     }
   : {};
