@@ -10,10 +10,14 @@
     "tailwind:watch": "tailwindcss -i ./renderer/styles.css -o ./renderer/dist.css --watch",
     "build:icons": "png2icons assets/icon.png assets/icon -allp -bc -i",
     "build:assets": "convert assets/icon.png -resize 16x16 assets/tray-mac.png && convert assets/icon.png -resize 32x32 assets/tray-mac@2x.png && convert assets/icon.png -resize 16x16 assets/tray-win.png && convert assets/icon.png -resize 32x32 assets/tray-win@2x.png",
-    "build": "npm run build:icons && npm run tailwind:build && electron-builder",
-    "build:mac": "npm run build:icons && npm run tailwind:build && electron-builder --mac",
-    "build:win": "npm run build:icons && npm run tailwind:build && electron-builder --win",
-    "build:win-store": "npm run build:icons && npm run tailwind:build && electron-builder --win appx",
+    "build": "run-s build:icons tailwind:build build:electron",
+    "build:mac": "run-s build:icons tailwind:build build:electron:mac",
+    "build:win": "run-s build:icons tailwind:build build:electron:win",
+    "build:win-store": "run-s build:icons tailwind:build build:electron:appx",
+    "build:electron": "electron-builder",
+    "build:electron:mac": "electron-builder --mac",
+    "build:electron:win": "electron-builder --win",
+    "build:electron:appx": "electron-builder --win appx",
     "postinstall": "electron-builder install-app-deps"
   },
   "keywords": [
@@ -30,6 +34,7 @@
   "devDependencies": {
     "electron": "^31.0.0",
     "electron-builder": "^24.13.3",
+    "npm-run-all": "^4.1.5",
     "png2icons": "^2.0.1",
     "tailwindcss": "^3.4.4"
   },
