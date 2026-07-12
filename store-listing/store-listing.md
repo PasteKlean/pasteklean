@@ -80,6 +80,7 @@ clipboard cleaner, clipboard manager, paste cleaner, text cleaner, remove format
 | 16:9 Hero / promotional | `store-listing/assets/Hero-1920x1080.png` | 1920 x 1080 |
 | 4:3 Promotional | `store-listing/assets/Promo-4x3-1440x1080.png` | 1440 x 1080 |
 | 9:16 Promotional | `store-listing/assets/Promo-9x16-1080x1920.png` | 1080 x 1920 |
+| 9:16 Poster art | `store-listing/assets/Promo-9x16-1440x2160.png` | 1440 x 2160 |
 | Screenshot 1 — Preferences | `store-listing/assets/Screenshot-01-1920x1080.png` | 1920 x 1080 |
 | Screenshot 2 — Clean Now | `store-listing/assets/Screenshot-02-1920x1080.png` | 1920 x 1080 |
 
