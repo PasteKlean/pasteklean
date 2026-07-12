@@ -73,6 +73,8 @@ clipboard cleaner, clipboard manager, paste cleaner, text cleaner, remove format
 
 | Purpose | File | Dimensions |
 | --- | --- | --- |
+| 1:1 App logo (2160) | `store-listing/assets/Logo-2160x2160.png` | 2160 x 2160 |
+| 1:1 App logo (1080) | `store-listing/assets/Logo-1080x1080.png` | 1080 x 1080 |
 | 1:1 App logo (1024) | `store-listing/assets/Logo-1024x1024.png` | 1024 x 1024 |
 | 1:1 App logo (600) | `store-listing/assets/Logo-600x600.png` | 600 x 600 |
 | 1:1 App logo (300) | `store-listing/assets/Logo-300x300.png` | 300 x 300 |
