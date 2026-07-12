@@ -50,6 +50,8 @@ const appxBuilder = appxConfig
         backgroundColor: env.MSIX_BACKGROUND_COLOR || 'transparent',
         languages: env.MSIX_LANGUAGES ? env.MSIX_LANGUAGES.split(',') : ['en-US'],
         artifactName: '${productName}-${version}.msix',
+        minVersion: '10.0.17763.0',
+        maxVersionTested: '10.0.22621.0',
       },
     }
   : {};
