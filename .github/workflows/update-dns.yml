@@ -1,0 +1,57 @@
+name: Update Cloudflare DNS
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/update-dns.yml'
+
+jobs:
+  update-dns:
+    runs-on: ubuntu-latest
+    env:
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upsert DNS records
+        run: |
+          set -euo pipefail
+          APP_HOST="pasteklean-website.fly.dev"
+          API="https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/dns_records"
+
+          upsert() {
+            local name="$1"
+            local type="$2"
+            local content="$3"
+            local proxied="${4:-true}"
+
+            local existing
+            existing=$(curl -s -H "Authorization: Bearer ${CF_API_TOKEN}" \
+              -H "Content-Type: application/json" \
+              "${API}?name=${name}&type=${type}")
+
+            local record_id
+            record_id=$(echo "${existing}" | python3 -c "import sys,json; print(json.load(sys.stdin)['result'][0]['id'] if json.load(sys.stdin)['result'] else '')")
+
+            local payload
+            payload=$(python3 -c "import json; print(json.dumps({'type':'${type}','name':'${name}','content':'${content}','ttl':1,'proxied':${proxied}=='true'}))")
+
+            if [ -n "${record_id}" ]; then
+              curl -s -X PUT -H "Authorization: Bearer ${CF_API_TOKEN}" \
+                -H "Content-Type: application/json" \
+                -d "${payload}" \
+                "${API}/${record_id}"
+            else
+              curl -s -X POST -H "Authorization: Bearer ${CF_API_TOKEN}" \
+                -H "Content-Type: application/json" \
+                -d "${payload}" \
+                "${API}"
+            fi
+          }
+
+          upsert "pasteklean.com" "CNAME" "${APP_HOST}"
+          upsert "www" "CNAME" "pasteklean.com"
