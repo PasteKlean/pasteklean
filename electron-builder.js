@@ -17,8 +17,10 @@ if (appxConfig) {
   winTargets.push(appxConfig);
 }
 
+const macSign = Boolean(env.CSC_LINK || env.CSC_NAME);
+
 const macNotarize =
-  (env.CSC_LINK || env.CSC_NAME) &&
+  macSign &&
   (
     (env.APPLE_API_KEY && env.APPLE_API_KEY_ID && env.APPLE_API_ISSUER) ||
     (env.APPLE_ID && env.APPLE_APP_SPECIFIC_PASSWORD && env.APPLE_TEAM_ID)
@@ -31,8 +33,8 @@ const mac = {
   ],
   category: 'public.app-category.utilities',
   icon: 'assets/icon.icns',
-  hardenedRuntime: true,
-  gatekeeperAssess: false,
+  hardenedRuntime: macSign,
+  gatekeeperAssess: !macSign,
 };
 
 if (macNotarize) {
@@ -56,16 +58,25 @@ const appxBuilder = appxConfig
     }
   : {};
 
+const afterSign = env.CSC_LINK || env.CSC_NAME ? 'build/afterSign.js' : undefined;
+
 module.exports = {
   appId: 'io.surgegrid.pasteclean',
   productName: 'PasteClean',
   copyright: 'Copyright © 2026 SurgeGrid',
   electronUpdaterCompatibility: '>= 2.16',
-  publish: null,
+  publish: env.GH_TOKEN
+    ? { provider: 'github', owner: 'PasteKlean', repo: 'pasteklean' }
+    : null,
   directories: {
     output: 'dist',
+    buildResources: 'build',
   },
-  files: ['main.js', 'preload.js', 'renderer/**/*', 'assets/**/*'],
+  files: ['main.js', 'preload.js', 'lib/**/*', 'renderer/**/*', 'assets/**/*'],
+  extraMetadata: {
+    sentryDsn: env.SENTRY_DSN || '',
+  },
+  afterSign,
   mac,
   win: {
     target: winTargets,

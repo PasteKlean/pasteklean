@@ -14,7 +14,7 @@
     'autoStart',
   ];
 
-  const shortcutInput = document.getElementById('shortcut');
+  const shortcutInput = /** @type {HTMLInputElement} */ (document.getElementById('shortcut'));
   const cleanNowButton = document.getElementById('cleanNow');
   const closeButton = document.getElementById('close');
   const versionLabel = document.getElementById('version');
@@ -26,7 +26,7 @@
     toast.textContent = message;
     toast.classList.remove('opacity-0');
     toast.classList.add('opacity-100');
-    if (toastTimer) clearTimeout(toastTimer);
+    if (toastTimer) {clearTimeout(toastTimer);}
     toastTimer = setTimeout(() => {
       toast.classList.remove('opacity-100');
       toast.classList.add('opacity-0');
@@ -35,20 +35,20 @@
 
   function renderConfig(config) {
     keys.forEach((key) => {
-      const el = document.getElementById(key);
-      if (!el) return;
+      const el = /** @type {HTMLInputElement | null} */ (document.getElementById(key));
+      if (!el) {return;}
       el.checked = Boolean(config[key]);
     });
 
     if (config.shortcut) {
-      shortcutInput.value = config.shortcut;
+      shortcutInput.value = String(config.shortcut);
     }
   }
 
   function bindEvents() {
     keys.forEach((key) => {
-      const el = document.getElementById(key);
-      if (!el) return;
+      const el = /** @type {HTMLInputElement | null} */ (document.getElementById(key));
+      if (!el) {return;}
       el.addEventListener('change', async () => {
         const update = { [key]: el.checked };
         const config = await window.api.setConfig(update);
@@ -82,10 +82,10 @@
       }
 
       const modifiers = [];
-      if (e.ctrlKey) modifiers.push('Ctrl');
-      if (e.metaKey) modifiers.push('Cmd');
-      if (e.altKey) modifiers.push('Alt');
-      if (e.shiftKey) modifiers.push('Shift');
+      if (e.ctrlKey) {modifiers.push('Ctrl');}
+      if (e.metaKey) {modifiers.push('Cmd');}
+      if (e.altKey) {modifiers.push('Alt');}
+      if (e.shiftKey) {modifiers.push('Shift');}
 
       const key = e.key;
       if (key === 'Control' || key === 'Meta' || key === 'Alt' || key === 'Shift') {
@@ -108,27 +108,42 @@
 
     shortcutInput.addEventListener('blur', () => {
       window.api.getConfig().then((config) => {
-        if (config.shortcut) shortcutInput.value = config.shortcut;
+        if (config.shortcut) {shortcutInput.value = String(config.shortcut);}
       });
     });
   }
 
   async function init() {
-    const config = await window.api.getConfig();
-    renderConfig(config);
+    try {
+      const config = await window.api.getConfig();
+      renderConfig(config);
 
-    const version = await window.api.getVersion();
-    versionLabel.textContent = 'v' + version;
+      const version = await window.api.getVersion();
+      versionLabel.textContent = 'v' + version;
 
-    bindEvents();
+      bindEvents();
 
-    window.api.subscribeConfig((nextConfig) => {
-      renderConfig(nextConfig);
-    });
+      window.api.subscribeConfig((nextConfig) => {
+        renderConfig(nextConfig);
+      });
 
-    window.api.onShowToast((message) => {
-      showToast(message);
-    });
+      window.api.onShowToast((message) => {
+        showToast(message);
+      });
+
+      window.onerror = (message, _source, _lineno, _colno, err) => {
+        window.api.reportError(err || new Error(String(message)));
+      };
+
+      window.addEventListener('unhandledrejection', (event) => {
+        window.api.reportError(event.reason || new Error('Unhandled renderer rejection'));
+      });
+    } catch (err) {
+      if (window.api && window.api.reportError) {
+        window.api.reportError(err);
+      }
+      throw err;
+    }
   }
 
   document.addEventListener('DOMContentLoaded', init);
