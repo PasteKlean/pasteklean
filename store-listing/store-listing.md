@@ -7,7 +7,8 @@
 - **Developer / Publisher:** PasteKlean
 - **Publisher display name:** PasteKlean
 - **Category:** Productivity > Utilities
-- **Website:** https://github.com/PasteKlean/pasteklean
+- **Website:** https://pasteklean.com
+- **Privacy policy URL:** https://pasteklean.com/privacy.html
 - **Support email:** dev@pasteklean.com
 - **Version:** 1.0.0
 
