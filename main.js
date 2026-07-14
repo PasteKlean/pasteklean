@@ -4,59 +4,46 @@ const { app, BrowserWindow, Tray, Menu, nativeImage, clipboard, globalShortcut, 
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const fs = require('fs');
-const crypto = require('crypto');
+const log = require('electron-log/main');
+
+const { cleanText, hashText } = require('./lib/clipboard');
+const { createConfigStore } = require('./lib/config');
+const sentry = require('./lib/sentry');
+const crash = require('./lib/crash');
+
+log.initialize();
 
 const isDev = process.argv.includes('--dev');
 const platform = process.platform;
 
+const packageJson = (() => {
+  try {
+    return require('./package.json');
+  } catch (err) {
+    log.error('Failed to load package.json:', err);
+    return { version: '1.0.0', sentryDsn: '' };
+  }
+})();
+
+const sentryDsn = process.env.SENTRY_DSN || /** @type {any} */ (packageJson).sentryDsn;
+sentry.init({
+  dsn: sentryDsn,
+  release: `pasteclean@${packageJson.version || '1.0.0'}`,
+  environment: app.isPackaged ? 'production' : 'development',
+  logger: log,
+});
+
 const singleInstanceLock = app.requestSingleInstanceLock();
 if (!singleInstanceLock) {
+  log.warn('Another instance is already running; quitting.');
   app.quit();
   process.exit(0);
 }
 
 const userDataPath = app.getPath('userData');
-const configPath = path.join(userDataPath, 'config.json');
+const configStore = createConfigStore(userDataPath, { logger: log });
 
-const defaultConfig = {
-  autoClean: true,
-  trimWhitespace: true,
-  normalizeLineEndings: true,
-  collapseSpaces: true,
-  removeEmptyLines: false,
-  removeHtml: false,
-  removeNonAscii: false,
-  smartQuotes: true,
-  showNotifications: true,
-  autoStart: false,
-  shortcut: 'CommandOrControl+Shift+C',
-};
-
-function loadConfig() {
-  try {
-    if (fs.existsSync(configPath)) {
-      const raw = fs.readFileSync(configPath, 'utf-8');
-      const parsed = JSON.parse(raw);
-      return { ...defaultConfig, ...parsed };
-    }
-  } catch (err) {
-    if (isDev) console.error('Failed to load config:', err);
-  }
-  return { ...defaultConfig };
-}
-
-function saveConfig(config) {
-  try {
-    if (!fs.existsSync(userDataPath)) {
-      fs.mkdirSync(userDataPath, { recursive: true });
-    }
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf-8');
-  } catch (err) {
-    if (isDev) console.error('Failed to save config:', err);
-  }
-}
-
-let config = loadConfig();
+let config = configStore.load();
 
 const subscribedWindows = [];
 
@@ -73,78 +60,28 @@ function notifyConfigChanged() {
 
 function setConfigValue(key, value) {
   config[key] = value;
-  saveConfig(config);
+  configStore.save(config);
   notifyConfigChanged();
   applyConfig();
 }
 
 function setConfig(next) {
   config = { ...config, ...next };
-  saveConfig(config);
+  configStore.save(config);
   notifyConfigChanged();
   applyConfig();
-}
-
-function hashText(text) {
-  return crypto.createHash('sha256').update(text).digest('hex');
-}
-
-function smartQuotesToAscii(text) {
-  return text
-    .replace(/[\u2018\u2019]/g, "'")
-    .replace(/[\u201C\u201D]/g, '"')
-    .replace(/[\u2013\u2014]/g, '-')
-    .replace(/[\u2026]/g, '...');
-}
-
-function cleanText(text) {
-  if (typeof text !== 'string') return text;
-
-  let cleaned = text;
-
-  if (config.removeHtml) {
-    cleaned = cleaned.replace(/<[^>]*>/g, ' ');
-  }
-
-  if (config.smartQuotes) {
-    cleaned = smartQuotesToAscii(cleaned);
-  }
-
-  if (config.normalizeLineEndings) {
-    cleaned = cleaned.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-  }
-
-  if (config.removeEmptyLines) {
-    cleaned = cleaned.replace(/\n\s*\n+/g, '\n');
-  }
-
-  if (config.collapseSpaces) {
-    cleaned = cleaned.replace(/[ \t]+/g, ' ');
-    cleaned = cleaned.replace(/\n +/g, '\n');
-    cleaned = cleaned.replace(/ +\n/g, '\n');
-  }
-
-  if (config.removeNonAscii) {
-    cleaned = cleaned.replace(/[^\x20-\x7E\n\t]/g, '');
-  }
-
-  if (config.trimWhitespace) {
-    cleaned = cleaned.trim();
-  }
-
-  return cleaned;
 }
 
 let tray = null;
 let preferencesWindow = null;
 let pollTimer = null;
-let shortcutRegistered = '';
+
 let lastText = '';
 let lastHash = '';
 let writePending = false;
 
 function showNotification(body) {
-  if (!config.showNotifications) return;
+  if (!config.showNotifications) {return;}
   if (preferencesWindow && !preferencesWindow.isDestroyed()) {
     preferencesWindow.webContents.send('show-toast', body);
   }
@@ -161,7 +98,7 @@ function showNotification(body) {
 
 function performClean() {
   const text = clipboard.readText();
-  const cleaned = cleanText(text);
+  const cleaned = cleanText(text, config);
   if (cleaned !== text) {
     clipboard.writeText(cleaned);
     writePending = true;
@@ -184,31 +121,36 @@ function pollClipboard() {
     return;
   }
 
-  if (!config.autoClean) return;
+  if (!config.autoClean) {return;}
 
-  const text = clipboard.readText();
-  if (text === lastText) return;
+  try {
+    const text = clipboard.readText();
+    if (text === lastText) {return;}
 
-  const hash = hashText(text);
-  if (hash === lastHash) return;
+    const hash = hashText(text);
+    if (hash === lastHash) {return;}
 
-  const cleaned = cleanText(text);
-  if (cleaned === text) {
-    lastText = text;
-    lastHash = hash;
-    return;
+    const cleaned = cleanText(text, config);
+    if (cleaned === text) {
+      lastText = text;
+      lastHash = hash;
+      return;
+    }
+
+    clipboard.writeText(cleaned);
+    writePending = true;
+    lastText = cleaned;
+    lastHash = hashText(cleaned);
+    showNotification('Clipboard cleaned');
+  } catch (err) {
+    log.error('Clipboard poll error:', err);
+    sentry.captureException(err);
   }
-
-  clipboard.writeText(cleaned);
-  writePending = true;
-  lastText = cleaned;
-  lastHash = hashText(cleaned);
-  showNotification('Clipboard cleaned');
 }
 
 function resolveFirst(...paths) {
   for (const p of paths) {
-    if (fs.existsSync(p)) return p;
+    if (fs.existsSync(p)) {return p;}
   }
   return paths[paths.length - 1];
 }
@@ -257,7 +199,8 @@ function buildTrayMenu() {
         try {
           await autoUpdater.checkForUpdates();
         } catch (err) {
-          if (isDev) console.error('Update check failed:', err);
+          log.error('Update check failed:', err);
+          sentry.captureException(err);
           showNotification('Update check failed');
         }
       },
@@ -276,7 +219,7 @@ function buildTrayMenu() {
     {
       label: 'Quit',
       click: () => {
-        if (pollTimer) clearInterval(pollTimer);
+        if (pollTimer) {clearInterval(pollTimer);}
         globalShortcut.unregisterAll();
         app.quit();
       },
@@ -291,7 +234,7 @@ function buildTrayMenuDarwin() {
 }
 
 function updateTrayMenu() {
-  if (!tray) return;
+  if (!tray) {return;}
   tray.setContextMenu(platform === 'darwin' ? buildTrayMenuDarwin() : buildTrayMenu());
 }
 
@@ -311,7 +254,7 @@ function createTray() {
     }
   });
   tray.on('right-click', () => {
-    if (platform === 'darwin') tray.popUpContextMenu();
+    if (platform === 'darwin') {tray.popUpContextMenu();}
   });
 }
 
@@ -356,12 +299,11 @@ function applyShortcuts() {
     try {
       const registered = globalShortcut.register(config.shortcut, performClean);
       if (!registered) {
-        if (isDev) console.warn('Failed to register shortcut:', config.shortcut);
-      } else {
-        shortcutRegistered = config.shortcut;
+        log.warn('Failed to register shortcut:', config.shortcut);
       }
     } catch (err) {
-      if (isDev) console.error('Shortcut registration error:', err);
+      log.error('Shortcut registration error:', err);
+      sentry.captureException(err);
     }
   }
 }
@@ -376,11 +318,12 @@ function applyConfig() {
 
 function setupAutoUpdater() {
   autoUpdater.on('error', (err) => {
-    if (isDev) console.error('Auto-updater error:', err);
+    log.error('Auto-updater error:', err);
+    sentry.captureException(err);
   });
 
   autoUpdater.on('checking-for-update', () => {
-    if (isDev) console.log('Checking for update...');
+    log.info('Checking for update...');
   });
 
   autoUpdater.on('update-available', () => {
@@ -388,7 +331,7 @@ function setupAutoUpdater() {
   });
 
   autoUpdater.on('update-not-available', () => {
-    if (isDev) console.log('No update available.');
+    log.info('No update available.');
   });
 
   autoUpdater.on('update-downloaded', () => {
@@ -402,12 +345,22 @@ function setupIpc() {
   ipcMain.handle('get-config', () => config);
 
   ipcMain.handle('set-config', (_event, next) => {
-    setConfig(next);
+    try {
+      setConfig(next);
+    } catch (err) {
+      log.error('Failed to set config:', err);
+      sentry.captureException(err);
+    }
     return config;
   });
 
   ipcMain.handle('clean-clipboard', () => {
-    performClean();
+    try {
+      performClean();
+    } catch (err) {
+      log.error('Failed to clean clipboard:', err);
+      sentry.captureException(err);
+    }
     return config;
   });
 
@@ -432,11 +385,24 @@ function setupIpc() {
       subscribedWindows.push(win);
     }
   });
+
+  ipcMain.on('report-error', (_event, payload) => {
+    try {
+      const err = payload && payload.stack ? new Error(payload.message) : new Error(String(payload));
+      if (payload && payload.stack) {err.stack = payload.stack;}
+      log.error('Renderer reported error:', err);
+      sentry.captureException(err);
+    } catch (e) {
+      log.error('Failed to report renderer error:', e);
+    }
+  });
 }
 
 if (platform === 'win32') {
   app.setAppUserModelId('io.surgegrid.pasteclean');
 }
+
+crash.setupCrashReporter({ logger: log, sentry });
 
 app.on('ready', () => {
   if (platform === 'darwin') {
@@ -448,13 +414,21 @@ app.on('ready', () => {
   setupAutoUpdater();
   applyConfig();
 
-  lastText = clipboard.readText();
-  lastHash = hashText(lastText);
+  try {
+    lastText = clipboard.readText();
+    lastHash = hashText(lastText);
+  } catch (err) {
+    log.error('Failed to read initial clipboard:', err);
+    sentry.captureException(err);
+  }
 
   pollTimer = setInterval(pollClipboard, 250);
 
   if (app.isPackaged) {
-    autoUpdater.checkForUpdatesAndNotify();
+    autoUpdater.checkForUpdatesAndNotify().catch((err) => {
+      log.error('Auto-updater initial check failed:', err);
+      sentry.captureException(err);
+    });
   }
 
   if (isDev && process.argv.includes('--open-prefs')) {
@@ -475,11 +449,11 @@ app.on('second-instance', () => {
 });
 
 app.on('will-quit', () => {
-  if (pollTimer) clearInterval(pollTimer);
+  if (pollTimer) {clearInterval(pollTimer);}
   globalShortcut.unregisterAll();
 });
 
 app.on('before-quit', () => {
-  if (pollTimer) clearInterval(pollTimer);
+  if (pollTimer) {clearInterval(pollTimer);}
   globalShortcut.unregisterAll();
 });

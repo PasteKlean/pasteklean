@@ -1,0 +1,21 @@
+{
+  "env": {
+    "node": true,
+    "es2022": true,
+    "browser": true,
+    "jest": true
+  },
+  "extends": ["eslint:recommended"],
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "script"
+  },
+  "rules": {
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "no-console": ["warn", { "allow": ["error", "warn"] }],
+    "eqeqeq": ["error", "always"],
+    "curly": ["error", "all"],
+    "no-throw-literal": "error"
+  },
+  "ignorePatterns": ["dist/", "node_modules/", "coverage/", "renderer/dist.css"]
+}

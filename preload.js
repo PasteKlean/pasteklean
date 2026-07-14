@@ -2,12 +2,6 @@
 
 const { contextBridge, ipcRenderer } = require('electron');
 
-const validChannels = {
-  invoke: ['get-config', 'set-config', 'clean-clipboard', 'get-version', 'get-platform'],
-  send: ['close-preferences', 'open-external', 'subscribe-config'],
-  receive: ['config-updated', 'show-toast'],
-};
-
 contextBridge.exposeInMainWorld('api', {
   getConfig: () => ipcRenderer.invoke('get-config'),
 
@@ -38,5 +32,10 @@ contextBridge.exposeInMainWorld('api', {
     return () => {
       ipcRenderer.removeListener('show-toast', handler);
     };
+  },
+
+  reportError: (err) => {
+    const payload = err && err.message ? { message: err.message, stack: err.stack || '' } : { message: String(err) };
+    ipcRenderer.send('report-error', payload);
   },
 });
