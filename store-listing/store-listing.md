@@ -14,7 +14,7 @@
 
 ## Short Description (max 1000 characters)
 
-Keep your clipboard clean, light, and ready to paste. PasteKlean is a zero-backend, ultra-lightweight system-tray utility that automatically strips formatting, fixes smart quotes, normalizes line endings, and trims whitespace from anything you copy.
+Copy messy. Paste clean. PasteKlean is a zero-backend system-tray utility that instantly strips formatting, fixes smart quotes, normalizes line endings, collapses extra spaces, trims whitespace, and removes HTML from anything you copy — so every paste is clean, portable, and ready to use.
 
 ## Full Description
 
