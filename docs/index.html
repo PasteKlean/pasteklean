@@ -4,512 +4,324 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="PasteKlean is a zero-backend, ultra-lightweight clipboard cleaner for Windows and macOS. Auto-clean formatting, smart quotes, whitespace, and HTML from your clipboard.">
-  <meta name="theme-color" content="#1e293b">
+  <meta name="theme-color" content="#05070a">
   <title>PasteKlean — Clean your clipboard instantly</title>
   <link rel="icon" type="image/png" href="assets/logo-512.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --slate-50: #f8fafc;
-      --slate-100: #f1f5f9;
-      --slate-200: #e2e8f0;
-      --slate-300: #cbd5e1;
-      --slate-400: #94a3b8;
-      --slate-500: #64748b;
-      --slate-600: #475569;
-      --slate-700: #334155;
-      --slate-800: #1e293b;
-      --slate-900: #0f172a;
-      --emerald-400: #34d399;
-      --emerald-500: #10b981;
-      --emerald-600: #059669;
-      --emerald-700: #047857;
-    }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      color: var(--slate-100);
-      background: var(--slate-900);
-      line-height: 1.6;
-    }
-
-    a { color: var(--emerald-400); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .container {
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 72px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 700;
-      font-size: 1.25rem;
-      color: #fff;
-    }
-
-    .brand img {
-      height: 36px;
-      width: 36px;
-      border-radius: 8px;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 28px;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      font-size: 0.95rem;
-    }
-
-    .nav-links a { color: var(--slate-300); }
-    .nav-links a:hover { color: #fff; }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 1rem;
-      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-      cursor: pointer;
-      border: none;
-    }
-
-    .btn:hover { transform: translateY(-1px); text-decoration: none; }
-
-    .btn-primary {
-      background: var(--emerald-500);
-      color: #fff;
-      box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.35);
-    }
-
-    .btn-primary:hover {
-      background: var(--emerald-600);
-      box-shadow: 0 14px 32px -5px rgba(16, 185, 129, 0.45);
-    }
-
-    .btn-secondary {
-      background: rgba(255,255,255,0.08);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,0.12);
-    }
-
-    .btn-secondary:hover { background: rgba(255,255,255,0.14); }
-
-    .hero {
-      position: relative;
-      overflow: hidden;
-      padding: 120px 0 100px;
-    }
-
-    .hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 50% 20%, rgba(16,185,129,0.12), transparent 50%),
-                  radial-gradient(circle at 80% 80%, rgba(52,211,153,0.06), transparent 40%);
-      pointer-events: none;
-    }
-
-    .hero-grid {
-      position: relative;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 60px;
-      align-items: center;
-    }
-
-    .hero h1 {
-      font-size: clamp(2.5rem, 5vw, 3.8rem);
-      font-weight: 700;
-      line-height: 1.1;
-      margin: 0 0 20px;
-      color: #fff;
-    }
-
-    .hero p {
-      font-size: 1.2rem;
-      color: var(--slate-300);
-      margin: 0 0 36px;
-      max-width: 540px;
-    }
-
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-
-    .hero-meta {
-      margin-top: 18px;
-      font-size: 0.85rem;
-      color: var(--slate-400);
-    }
-
-    .hero-visual {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .hero-visual img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 16px;
-      box-shadow: 0 32px 64px -12px rgba(0,0,0,0.5);
-    }
-
-    section {
-      padding: 90px 0;
-    }
-
-    section.light {
-      background: var(--slate-800);
-    }
-
-    .section-title {
-      text-align: center;
-      max-width: 640px;
-      margin: 0 auto 60px;
-    }
-
-    .section-title h2 {
-      font-size: clamp(1.8rem, 3.5vw, 2.4rem);
-      font-weight: 700;
-      color: #fff;
-      margin: 0 0 14px;
-    }
-
-    .section-title p {
-      color: var(--slate-400);
-      margin: 0;
-      font-size: 1.05rem;
-    }
-
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 24px;
-    }
-
-    .feature {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 16px;
-      padding: 28px;
-      transition: transform 0.2s ease, border-color 0.2s ease;
-    }
-
-    .feature:hover {
-      transform: translateY(-4px);
-      border-color: rgba(16,185,129,0.25);
-    }
-
-    .feature-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      background: rgba(16,185,129,0.12);
-      color: var(--emerald-400);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      margin-bottom: 18px;
-    }
-
-    .feature h3 {
-      margin: 0 0 10px;
-      font-size: 1.1rem;
-      color: #fff;
-    }
-
-    .feature p {
-      margin: 0;
-      color: var(--slate-400);
-      font-size: 0.95rem;
-    }
-
-    .split {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 60px;
-      align-items: center;
-    }
-
-    .split img {
-      max-width: 100%;
-      border-radius: 16px;
-      box-shadow: 0 24px 48px -10px rgba(0,0,0,0.4);
-    }
-
-    .split h3 {
-      font-size: 1.9rem;
-      color: #fff;
-      margin: 0 0 18px;
-    }
-
-    .split p {
-      color: var(--slate-300);
-      margin: 0 0 24px;
-    }
-
-    .split ul {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .split li {
-      padding: 6px 0 6px 28px;
-      position: relative;
-      color: var(--slate-300);
-    }
-
-    .split li::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 14px;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--emerald-500);
-    }
-
-    .screenshots {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      gap: 32px;
-    }
-
-    .screenshot {
-      background: var(--slate-800);
-      border-radius: 16px;
-      padding: 12px;
-      border: 1px solid rgba(255,255,255,0.05);
-    }
-
-    .screenshot img {
-      width: 100%;
-      border-radius: 10px;
-      display: block;
-    }
-
-    .privacy {
-      background: var(--slate-800);
-    }
-
-    .privacy-box {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 16px;
-      padding: 40px;
-    }
-
-    .privacy-box h2 { margin-top: 0; color: #fff; }
-    .privacy-box p { color: var(--slate-300); margin: 12px 0; }
-    .privacy-box ul { color: var(--slate-400); margin: 12px 0; }
-
-    footer {
-      padding: 60px 0 30px;
-      text-align: center;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      color: var(--slate-500);
-      font-size: 0.9rem;
-    }
-
-    footer .brand { justify-content: center; margin-bottom: 18px; }
-    footer a { color: var(--slate-400); }
-    footer a:hover { color: #fff; }
-
-    @media (max-width: 880px) {
-      .hero-grid, .split {
-        grid-template-columns: 1fr;
-        text-align: center;
-      }
-      .split img { order: 0; }
-      .split > div { order: 1; }
-      .hero-visual img, .split img { margin: 0 auto; }
-      .hero-actions { justify-content: center; }
-      .hero p { margin-left: auto; margin-right: auto; }
-      .nav-links { display: none; }
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="bg-grid"></div>
+
   <header>
     <div class="container nav">
-      <div class="brand">
-        <img src="assets/logo-512.png" alt="PasteKlean logo">
+      <a class="brand" href="index.html">
+        <img src="assets/logo.png" alt="PasteKlean logo">
         PasteKlean
-      </div>
-      <ul class="nav-links">
-        <li><a href="#features">Features</a></li>
-        <li><a href="#how-it-works">How it works</a></li>
-        <li><a href="#privacy">Privacy</a></li>
-        <li><a href="mailto:dev@pasteklean.com">Support</a></li>
-      </ul>
+      </a>
+      <nav class="nav-links">
+        <a href="#features" class="nav-hide">Features</a>
+        <a href="#how-it-works" class="nav-hide">How it works</a>
+        <a href="privacy.html">Privacy</a>
+        <a class="btn btn-primary" href="https://app.devin.ai/attachments/1764431e-fc4c-44df-a049-9cd805e0f603/PasteClean-1.0.0.msix">Download for Windows</a>
+      </nav>
     </div>
   </header>
 
   <section class="hero">
-    <div class="container hero-grid">
-      <div>
-        <h1>Your clipboard, cleaned automatically.</h1>
-        <p>PasteKlean is a zero-backend, ultra-lightweight system-tray utility that strips formatting, smart quotes, HTML, and whitespace from anything you copy.</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="https://app.devin.ai/attachments/1764431e-fc4c-44df-a049-9cd805e0f603/PasteClean-1.0.0.msix" download>Download for Windows</a>
-          <a class="btn btn-secondary" href="https://github.com/PasteKlean/pasteklean">View on GitHub</a>
-        </div>
-        <div class="hero-meta">Requires Windows 10, version 1809 (10.0.17763.0) or later. Also available for macOS.</div>
-      </div>
-      <div class="hero-visual">
-        <img src="assets/hero.jpg" alt="PasteKlean promotional hero">
-      </div>
-    </div>
-  </section>
-
-  <section id="features">
+    <div class="hero-bg"></div>
     <div class="container">
-      <div class="section-title">
-        <h2>Built for focus</h2>
-        <p>Simple toggles let you choose exactly how your clipboard is cleaned every time you copy.</p>
-      </div>
-      <div class="features">
-        <div class="feature">
-          <div class="feature-icon">&#9986;</div>
-          <h3>Trim whitespace</h3>
-          <p>Remove accidental leading and trailing spaces from copied text.</p>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">&#182;</div>
-          <h3>Normalize line endings</h3>
-          <p>Convert Windows and old Mac line breaks into clean, consistent newlines.</p>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">&#32;&#32;&#8594;&#32;&#32;</div>
-          <h3>Collapse multiple spaces</h3>
-          <p>Turn runs of tabs and spaces into a single space for compact output.</p>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">&#10005;</div>
-          <h3>Remove empty lines</h3>
-          <p>Strip extra blank lines when you need a tight, clean block of text.</p>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">&lt;/&gt;</div>
-          <h3>Strip HTML tags</h3>
-          <p>Remove leftover HTML markup copied from web pages and documents.</p>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">""</div>
-          <h3>Replace smart quotes</h3>
-          <p>Convert curly quotes, em-dashes, and ellipses into plain ASCII characters.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="how-it-works" class="light">
-    <div class="container">
-      <div class="section-title">
-        <h2>How it works</h2>
-        <p>PasteKlean lives in your system tray and monitors the clipboard. Choose your rules once, then copy normally.</p>
-      </div>
-      <div class="split">
-        <img src="assets/screenshot-1.jpg" alt="PasteKlean preferences window">
-        <div>
-          <h3>One preferences window, no clutter</h3>
-          <p>Enable the cleaning rules you want, set a global shortcut, and choose whether to start at login. No wizard, no account, no unnecessary options.</p>
-          <ul>
-            <li>Auto-clean every copy</li>
-            <li>Manual clean with a hotkey or tray click</li>
-            <li>Optional toast notifications</li>
-            <li>Launch at login</li>
+      <div class="hero-grid">
+        <div class="hero-content">
+          <div class="badge">
+            <span class="badge-dot"></span>
+            Available for Windows 10/11 & macOS
+          </div>
+          <h1>
+            Clean your clipboard <br>
+            <span class="gradient-text">in an instant.</span>
+          </h1>
+          <p class="lead">
+            PasteKlean is a zero-backend, ultra-lightweight system-tray utility that automatically strips formatting, fixes smart quotes, normalizes line endings, and trims whitespace from anything you copy.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="https://app.devin.ai/attachments/1764431e-fc4c-44df-a049-9cd805e0f603/PasteClean-1.0.0.msix">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download for Windows
+            </a>
+            <a class="btn btn-secondary" href="#how-it-works">
+              See how it works
+            </a>
+          </div>
+          <ul class="check-list">
+            <li>
+              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              No account required
+            </li>
+            <li>
+              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Zero data collection
+            </li>
+            <li>
+              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Free to use
+            </li>
           </ul>
         </div>
-      </div>
-      <div class="split" style="margin-top: 80px;">
-        <div>
-          <h3>Instant feedback</h3>
-          <p>When you click "Clean Now" or press your shortcut, PasteKlean tells you exactly what happened. Clean text is already on your clipboard, ready to paste.</p>
-          <p>Everything runs locally on your machine. There are no servers, no analytics, and no accounts.</p>
+
+        <div class="hero-visual">
+          <div class="demo-card">
+            <h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Try it live
+            </h3>
+            <label for="demo-input">Paste messy text</label>
+            <textarea id="demo-input" placeholder="Paste text with extra spaces, smart quotes, or HTML..."></textarea>
+
+            <div class="demo-controls">
+              <label><input type="checkbox" id="opt-trim" checked> Trim</label>
+              <label><input type="checkbox" id="opt-lines" checked> Normalize lines</label>
+              <label><input type="checkbox" id="opt-collapse" checked> Collapse spaces</label>
+              <label><input type="checkbox" id="opt-html"> Strip HTML</label>
+              <label><input type="checkbox" id="opt-smart" checked> Smart quotes</label>
+              <label><input type="checkbox" id="opt-ascii"> Non-ASCII</label>
+            </div>
+
+            <label>Cleaned output</label>
+            <div id="demo-output" class="output">Type or paste text above to see PasteKlean clean it instantly.</div>
+
+            <button class="btn btn-primary" id="demo-clean" style="width: 100%;">
+              Clean clipboard
+            </button>
+          </div>
         </div>
-        <img src="assets/screenshot-2.jpg" alt="PasteKlean cleaning notification">
       </div>
     </div>
   </section>
 
-  <section id="privacy" class="privacy">
+  <section class="section" style="padding-top: 40px;">
     <div class="container">
-      <div class="section-title">
-        <h2>Privacy first</h2>
-        <p>Your clipboard never leaves your device. PasteKlean is zero-backend by design.</p>
-      </div>
-      <div class="privacy-box">
-        <h2>No data collection</h2>
-        <p>PasteKlean does <strong>not</strong> access, collect, transmit, or store any personal information. The application:</p>
-        <ul>
-          <li>Processes clipboard data only on your local device</li>
-          <li>Does not connect to external servers</li>
-          <li>Does not use advertising, analytics, or tracking</li>
-          <li>Does not require an account or registration</li>
-        </ul>
-        <p>Read the full <a href="privacy.html">Privacy Policy</a>.</p>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="number">100%</div>
+          <div class="label">Local processing</div>
+        </div>
+        <div class="stat-card">
+          <div class="number">0</div>
+          <div class="label">Trackers or analytics</div>
+        </div>
+        <div class="stat-card">
+          <div class="number">7+</div>
+          <div class="label">Cleaning rules</div>
+        </div>
+        <div class="stat-card">
+          <div class="number">1</div>
+          <div class="label">Global shortcut</div>
+        </div>
       </div>
     </div>
   </section>
 
-  <section>
-    <div class="container" style="text-align: center;">
-      <h2 style="font-size: 2rem; color: #fff; margin-bottom: 14px;">Ready to paste clean?</h2>
-      <p style="color: var(--slate-400); margin-bottom: 32px;">Download the latest Windows build and try PasteKlean today.</p>
-      <a class="btn btn-primary" href="https://app.devin.ai/attachments/1764431e-fc4c-44df-a049-9cd805e0f603/PasteClean-1.0.0.msix" download>Download for Windows</a>
+  <section id="how-it-works" class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="eyebrow">How it works</div>
+        <h2>Clean paste in three steps</h2>
+        <p>PasteKlean lives in your system tray and watches your clipboard. The moment you copy, it can clean — no extra clicks.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="step-number">01</span>
+          <h3>Copy anything</h3>
+          <p>Copy text from a web page, email, document, or code snippet — messy formatting and all.</p>
+        </div>
+        <div class="step">
+          <span class="step-number">02</span>
+          <h3>PasteKlean cleans</h3>
+          <p>The app reads your clipboard, applies the rules you enabled, and writes the cleaned text back.</p>
+        </div>
+        <div class="step">
+          <span class="step-number">03</span>
+          <h3>Paste confidently</h3>
+          <p>Paste anywhere and get plain, predictable text without hidden markup or weird spacing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="section" style="padding-top: 40px;">
+    <div class="container">
+      <div class="section-header">
+        <div class="eyebrow">Features</div>
+        <h2>Everything your clipboard needs</h2>
+        <p>Toggle each cleaning rule independently. Use the app manually, automatically, or with a global shortcut.</p>
+      </div>
+      <div class="features">
+        <div class="feature-card">
+          <img src="assets/feature-auto.png" alt="Auto-clean illustration">
+          <div>
+            <h3>Automatic cleaning</h3>
+            <p>Enable auto-clean and let PasteKlean sanitize every copy in real time, so your clipboard is always ready.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <img src="assets/feature-formatting.png" alt="Formatting rules illustration">
+          <div>
+            <h3>Powerful formatting rules</h3>
+            <p>Trim whitespace, collapse spaces, normalize line endings, strip HTML tags, and remove non-ASCII characters.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <img src="assets/feature-shortcuts.png" alt="Keyboard shortcut illustration">
+          <div>
+            <h3>Global shortcut</h3>
+            <p>Press <code>Ctrl+Shift+C</code> (or set your own) to clean the clipboard instantly from anywhere.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <img src="assets/feature-privacy.png" alt="Privacy illustration">
+          <div>
+            <h3>Private by design</h3>
+            <p>No servers, no analytics, no accounts. Your clipboard never leaves your machine.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="privacy-band">
+        <img src="assets/app-mockup.png" alt="PasteKlean preferences window mockup">
+        <div>
+          <h2>Your clipboard. Your data. Your control.</h2>
+          <p>PasteKlean is built privacy-first. All cleaning happens locally on your device. There are no external servers, no usage analytics, and no advertising trackers.</p>
+          <ul class="security-list">
+            <li>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Zero network access
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              No personal data collected
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Preferences stored locally
+            </li>
+          </ul>
+          <a class="btn btn-primary" href="privacy.html">Read the privacy policy</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="cta-bg"></div>
+    <div class="container" style="position: relative; z-index: 1;">
+      <h2>Stop pasting messy text.</h2>
+      <p>Download PasteKlean and keep your clipboard clean, light, and ready to paste.</p>
+      <a class="btn btn-primary" href="https://app.devin.ai/attachments/1764431e-fc4c-44df-a049-9cd805e0f603/PasteClean-1.0.0.msix">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download for Windows
+      </a>
     </div>
   </section>
 
   <footer>
     <div class="container">
-      <div class="brand"><img src="assets/logo-512.png" alt="PasteKlean logo">PasteKlean</div>
-      <p>
-        <a href="https://github.com/PasteKlean/pasteklean">GitHub</a> &bull;
-        <a href="privacy.html">Privacy Policy</a> &bull;
-        <a href="mailto:dev@pasteklean.com">dev@pasteklean.com</a>
-      </p>
-      <p style="margin-top: 12px; color: var(--slate-600);">© 2026 SurgeGrid. All rights reserved.</p>
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">
+            <img src="assets/logo.png" alt="PasteKlean logo">
+            PasteKlean
+          </div>
+          <p style="color: var(--muted); max-width: 280px;">A zero-backend clipboard cleaner for Windows and macOS. Built by SurgeGrid.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how-it-works">How it works</a></li>
+            <li><a href="https://app.devin.ai/attachments/1764431e-fc4c-44df-a049-9cd805e0f603/PasteClean-1.0.0.msix">Download</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="privacy.html">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="mailto:dev@pasteklean.com">dev@pasteklean.com</a></li>
+            <li><a href="https://github.com/PasteKlean/pasteklean">GitHub</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 SurgeGrid. All rights reserved.</span>
+        <span>Built for the Microsoft Store</span>
+      </div>
     </div>
   </footer>
+
+  <script>
+    (function () {
+      const input = document.getElementById('demo-input');
+      const output = document.getElementById('demo-output');
+      const cleanBtn = document.getElementById('demo-clean');
+
+      const defaultText = "   “Hello” — it’s great…   \n\n  <p>Some HTML</p>  \n  café  ";
+      input.value = defaultText;
+
+      const smartQuotesToAscii = (text) => text
+        .replace(/[\u2018\u2019]/g, "'")
+        .replace(/[\u201C\u201D]/g, '"')
+        .replace(/[\u2013\u2014]/g, '-')
+        .replace(/[\u2026]/g, '...');
+
+      function clean() {
+        let text = input.value;
+
+        if (document.getElementById('opt-html').checked) {
+          text = text.replace(/<[^>]*>/g, ' ');
+        }
+        if (document.getElementById('opt-smart').checked) {
+          text = smartQuotesToAscii(text);
+        }
+        if (document.getElementById('opt-lines').checked) {
+          text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+        }
+        if (document.getElementById('opt-collapse').checked) {
+          text = text.replace(/[ \t]+/g, ' ');
+          text = text.replace(/\n +/g, '\n');
+          text = text.replace(/ +\n/g, '\n');
+        }
+        if (document.getElementById('opt-ascii').checked) {
+          text = text.replace(/[^\x20-\x7E\n\t]/g, '');
+        }
+        if (document.getElementById('opt-trim').checked) {
+          text = text.trim();
+        }
+
+        output.textContent = text;
+      }
+
+      input.addEventListener('input', clean);
+      document.querySelectorAll('.demo-controls input').forEach(el => el.addEventListener('change', clean));
+      cleanBtn.addEventListener('click', () => {
+        clean();
+        cleanBtn.textContent = 'Cleaned!';
+        setTimeout(() => cleanBtn.textContent = 'Clean clipboard', 1200);
+      });
+
+      clean();
+    })();
+  </script>
 </body>
 </html>
