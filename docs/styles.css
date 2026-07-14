@@ -633,6 +633,114 @@ footer {
   font-size: 0.9em;
 }
 
+/* Pricing & Installation */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+  justify-content: center;
+}
+
+.pricing-card {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 44px;
+  box-shadow: var(--shadow);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.pricing-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.pricing-header h3 {
+  font-size: 1.25rem;
+  color: var(--muted);
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.price {
+  font-size: 4rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.billing {
+  color: var(--dim);
+  font-size: 0.95rem;
+  margin: 8px 0 0;
+}
+
+.pricing-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px;
+  display: grid;
+  gap: 14px;
+}
+
+.pricing-features li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.pricing-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.pricing-note {
+  text-align: center;
+  color: var(--dim);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.install-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}
+
+.install-card {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+}
+
+.install-card h3 {
+  font-size: 1.2rem;
+  color: var(--text);
+  margin: 0 0 12px;
+}
+
+.install-card p {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.install-card code {
+  background: rgba(15, 23, 42, 0.06);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--teal);
+  font-size: 0.9em;
+}
+
 @media (max-width: 1024px) {
   .hero-grid,
   .privacy-band {
@@ -645,6 +753,10 @@ footer {
   }
   .footer-grid {
     grid-template-columns: 1fr 1fr;
+  }
+  .pricing-grid,
+  .install-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -659,4 +771,6 @@ footer {
   .footer-grid { grid-template-columns: 1fr; }
   .nav-links .nav-hide { display: none; }
   .privacy-band { padding: 32px; }
+  .price { font-size: 3rem; }
+  .pricing-card { padding: 32px; }
 }
