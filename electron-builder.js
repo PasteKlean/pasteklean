@@ -49,7 +49,7 @@ const appxBuilder = appxConfig
         publisher: env.MSIX_PUBLISHER,
         publisherDisplayName: env.MSIX_PUBLISHER_DISPLAY_NAME || env.MSIX_DISPLAY_NAME || 'PasteKlean',
         displayName: env.MSIX_DISPLAY_NAME || 'PasteClean',
-        backgroundColor: env.MSIX_BACKGROUND_COLOR || 'transparent',
+        backgroundColor: env.MSIX_BACKGROUND_COLOR || '#ffffff',
         languages: env.MSIX_LANGUAGES ? env.MSIX_LANGUAGES.split(',') : ['en-US'],
         artifactName: '${productName}-${version}.msix',
         minVersion: '10.0.17763.0',
@@ -61,9 +61,9 @@ const appxBuilder = appxConfig
 const afterSign = env.CSC_LINK || env.CSC_NAME ? 'build/afterSign.js' : undefined;
 
 module.exports = {
-  appId: 'io.surgegrid.pasteclean',
+  appId: 'com.pasteklean.pasteclean',
   productName: 'PasteClean',
-  copyright: 'Copyright © 2026 SurgeGrid',
+  copyright: 'Copyright © 2026 PasteKlean',
   electronUpdaterCompatibility: '>= 2.16',
   publish: env.GH_TOKEN
     ? { provider: 'github', owner: 'PasteKlean', repo: 'pasteklean' }
