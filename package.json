@@ -1,6 +1,6 @@
 {
   "name": "pasteclean",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Zero-backend, ultra-lightweight clipboard cleaner for macOS and Windows",
   "main": "main.js",
   "scripts": {
