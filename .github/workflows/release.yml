@@ -58,7 +58,7 @@ jobs:
       MSIX_APPLICATION_ID: "App"
       MSIX_DISPLAY_NAME: "PasteKlean"
       MSIX_PUBLISHER_DISPLAY_NAME: "PasteKlean"
-      MSIX_BACKGROUND_COLOR: "transparent"
+      MSIX_BACKGROUND_COLOR: "#ffffff"
       MSIX_LANGUAGES: "en-US"
     steps:
       - name: Checkout tag
