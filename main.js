@@ -155,21 +155,30 @@ function resolveFirst(...paths) {
   return paths[paths.length - 1];
 }
 
+function loadImage(filePath) {
+  try {
+    return nativeImage.createFromBuffer(fs.readFileSync(filePath));
+  } catch (err) {
+    log.error('Failed to load image:', filePath, err);
+    return nativeImage.createEmpty();
+  }
+}
+
 function getTrayIcon() {
   const assets = path.join(__dirname, 'assets');
   if (platform === 'darwin') {
     const retina = path.join(assets, 'tray-mac@2x.png');
     const normal = path.join(assets, 'tray-mac.png');
     const chosen = resolveFirst(retina, normal, path.join(assets, 'tray-win.png'));
-    return nativeImage.createFromPath(chosen);
+    return loadImage(chosen);
   }
   if (platform === 'win32') {
     const retina = path.join(assets, 'tray-win@2x.png');
     const normal = path.join(assets, 'tray-win.png');
     const chosen = resolveFirst(retina, normal, path.join(assets, 'tray-mac.png'));
-    return nativeImage.createFromPath(chosen);
+    return loadImage(chosen);
   }
-  return nativeImage.createFromPath(resolveFirst(
+  return loadImage(resolveFirst(
     path.join(assets, 'tray-win.png'),
     path.join(assets, 'tray-mac.png')
   ));
@@ -273,7 +282,7 @@ function openPreferences() {
     minimizable: false,
     fullscreenable: false,
     title: 'PasteClean Preferences',
-    icon: path.join(__dirname, 'assets', 'icon.png'),
+    icon: loadImage(path.join(__dirname, 'assets', 'icon.png')),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -317,6 +326,11 @@ function applyConfig() {
 }
 
 function setupAutoUpdater() {
+  if (process.windowsStore) {
+    log.info('Auto-updater disabled for Microsoft Store build');
+    return;
+  }
+
   autoUpdater.on('error', (err) => {
     log.error('Auto-updater error:', err);
     sentry.captureException(err);
@@ -398,8 +412,8 @@ function setupIpc() {
   });
 }
 
-if (platform === 'win32') {
-  app.setAppUserModelId('io.surgegrid.pasteclean');
+if (platform === 'win32' && !process.windowsStore) {
+  app.setAppUserModelId('com.pasteklean.pasteclean');
 }
 
 crash.setupCrashReporter({ logger: log, sentry });
@@ -424,7 +438,7 @@ app.on('ready', () => {
 
   pollTimer = setInterval(pollClipboard, 250);
 
-  if (app.isPackaged) {
+  if (app.isPackaged && !process.windowsStore) {
     autoUpdater.checkForUpdatesAndNotify().catch((err) => {
       log.error('Auto-updater initial check failed:', err);
       sentry.captureException(err);
